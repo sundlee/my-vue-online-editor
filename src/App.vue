@@ -3,7 +3,12 @@
     <nav-bar />
     <div class="split">
       <div id="split-0" class="content">
-        <button @click="addNode">Add Node</button>
+        <button
+          class="vtl-btn"
+          @click="addNode"
+        >
+          Add Node
+        </button>
         <vue-tree-list
           @click="onClick"
           @change-name="onChangeName"
@@ -14,17 +19,17 @@
           default-leaf-node-name="new leaf"
           v-bind:default-expanded="false"
         >
-          <template v-slot:leafNameDisplay="slotProps">
+          <!-- <template v-slot:leafNameDisplay="slotProps">
             <span>
               {{ slotProps.model.name }} <span class="muted">#{{ slotProps.model.id }}</span>
             </span>
-          </template>
-          <span class="icon" slot="addTreeNodeIcon">📂</span>
+          </template> -->
+          <!-- <span class="icon" slot="addTreeNodeIcon">📂</span>
           <span class="icon" slot="addLeafNodeIcon">＋</span>
           <span class="icon" slot="editNodeIcon">📃</span>
           <span class="icon" slot="delNodeIcon">✂️</span>
           <span class="icon" slot="leafNodeIcon">🍃</span>
-          <span class="icon" slot="treeNodeIcon">🌲</span>
+          <span class="icon" slot="treeNodeIcon">🌲</span> -->
         </vue-tree-list>
         <!-- <button @click="getNewTree">Get new tree</button>
         <pre>
@@ -45,7 +50,7 @@
 <script>
 import Split from 'split.js';
 import NavBar from './components/NavBar.vue';
-import { VueTreeList, Tree, TreeNode } from 'vue-tree-list'
+import { VueTreeList, Tree, TreeNode } from '@/components/vtl/'
 import { codemirror } from 'vue-codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/lint/lint.css';
@@ -69,12 +74,12 @@ export default {
         {
           name: 'Node 1',
           id: 1,
-          pid: 0,
-          dragDisabled: true,
-          addTreeNodeDisabled: true,
-          addLeafNodeDisabled: true,
-          editNodeDisabled: true,
-          delNodeDisabled: true,
+          // pid: 0,
+          // dragDisabled: true,
+          // addTreeNodeDisabled: true,
+          // addLeafNodeDisabled: true,
+          // editNodeDisabled: true,
+          // delNodeDisabled: true,
           children: [
             {
               name: 'Node 1-2',
@@ -88,12 +93,31 @@ export default {
           name: 'Node 2',
           id: 3,
           pid: 0,
-          disabled: true
+          // disabled: true
         },
         {
           name: 'Node 3',
           id: 4,
           pid: 0
+        },
+        {
+          name: 'Node 4',
+          id: 5,
+          pid: 0,
+          children: [
+            {
+              name: 'Node 4-1',
+              id: 6,
+              isLeaf: true,
+              pid: 0
+            },
+            {
+              name: 'Node 4-2',
+              id: 7,
+              isLeaf: true,
+              pid: 7
+            }
+          ]
         }
       ]),
 
@@ -141,28 +165,23 @@ export default {
   },
   methods: {
     onDel(node) {
-      console.log(node)
+      console.log('onDel: ', node)
       node.remove()
     },
-
     onChangeName(params) {
-      console.log(params)
+      console.log('onChangeName: ', params)
     },
-
     onAddNode(params) {
-      console.log(params)
+      console.log('onAddNode: ', params)
     },
-
     onClick(params) {
-      console.log(params)
+      console.log('onClick: ', params)
     },
-
     addNode() {
       var node = new TreeNode({ name: 'new node', isLeaf: false })
       if (!this.data.children) this.data.children = []
       this.data.addChildren(node)
     },
-
     getNewTree() {
       var vm = this
       function _dfs(oldNode) {
@@ -189,7 +208,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 body {
   height: 100vh;
 }
@@ -213,5 +232,18 @@ body {
 .gutter.gutter-horizontal {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
   cursor: col-resize;
+}
+.vtl-btn {
+  font-size: 13px;
+}
+.icon {
+  &:hover {
+    cursor: pointer;
+    // background-color: red;
+  }
+}
+.muted {
+  color: gray;
+  font-size: 80%;
 }
 </style>
