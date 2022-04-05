@@ -1,24 +1,9 @@
 # my-vue-online-editor
 
-## Project setup
+[vue-tree-list](https://www.npmjs.com/package/vue-tree-list)와 [vue-codemirror](https://www.npmjs.com/package/vue-codemirror)를 사용해서 online editor를 구성한 예제입니다.
+
+## How to build
 ```
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
 npm run serve
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
