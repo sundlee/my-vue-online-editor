@@ -3,38 +3,52 @@
     <nav-bar />
     <div class="split">
       <div id="split-0" class="content">
-        <button
-          class="vtl-btn"
-          @click="addNode"
-        >
-          Add Node
-        </button>
-        <vue-tree-list
-          @click="onClick"
-          @change-name="onChangeName"
-          @delete-node="onDel"
-          @add-node="onAddNode"
-          :model="data"
-          default-tree-node-name="new node"
-          default-leaf-node-name="new leaf"
-          v-bind:default-expanded="false"
-        >
-          <!-- <template v-slot:leafNameDisplay="slotProps">
-            <span>
-              {{ slotProps.model.name }} <span class="muted">#{{ slotProps.model.id }}</span>
-            </span>
-          </template> -->
-          <!-- <span class="icon" slot="addTreeNodeIcon">📂</span>
-          <span class="icon" slot="addLeafNodeIcon">＋</span>
-          <span class="icon" slot="editNodeIcon">📃</span>
-          <span class="icon" slot="delNodeIcon">✂️</span>
-          <span class="icon" slot="leafNodeIcon">🍃</span>
-          <span class="icon" slot="treeNodeIcon">🌲</span> -->
-        </vue-tree-list>
-        <!-- <button @click="getNewTree">Get new tree</button>
-        <pre>
-          {{newTree}}
-        </pre> -->
+        <b-card class="aside">
+          <template #header>
+            <div class="explorer-header">
+              <h6 class="mb-0">EXPLORER</h6>
+              <b-button
+                variant="custom-4"
+                size="sm"
+                @click="addNode"
+              >
+                <b-icon icon="plus"></b-icon>
+              </b-button>
+            </div>
+          </template>
+          <!-- <button
+            class="vtl-btn"
+            @click="addNode"
+          >
+            Add Node
+          </button> -->
+          <vue-tree-list
+            @click="onClick"
+            @change-name="onChangeName"
+            @delete-node="onDel"
+            @add-node="onAddNode"
+            :model="data"
+            default-tree-node-name="new node"
+            default-leaf-node-name="new leaf"
+            v-bind:default-expanded="false"
+          >
+            <!-- <template v-slot:leafNameDisplay="slotProps">
+              <span>
+                {{ slotProps.model.name }} <span class="muted">#{{ slotProps.model.id }}</span>
+              </span>
+            </template> -->
+            <!-- <span class="icon" slot="addTreeNodeIcon">📂</span>
+            <span class="icon" slot="addLeafNodeIcon">＋</span>
+            <span class="icon" slot="editNodeIcon">📃</span>
+            <span class="icon" slot="delNodeIcon">✂️</span>
+            <span class="icon" slot="leafNodeIcon">🍃</span>
+            <span class="icon" slot="treeNodeIcon">🌲</span> -->
+          </vue-tree-list>
+          <!-- <button @click="getNewTree">Get new tree</button>
+          <pre>
+            {{newTree}}
+          </pre> -->
+        </b-card>
       </div>
       <div id="split-1" class="content">
         <codemirror
@@ -209,20 +223,26 @@ export default {
 </script>
 
 <style lang="scss">
-body {
-  height: 100vh;
-}
-.content {
-	padding: 8px;
-	border: 1px solid #c0c0c0;
-	box-shadow: inset 0 1px 2px #e4e4e4;
-	background-color: #fff;
-	
-	/* height: 500px; */
-}
 .split {
   display: flex;
   flex-direction: row;
+  .content {
+    // padding: 8px;
+    border: 1px solid #c0c0c0;
+    box-shadow: inset 0 1px 2px #e4e4e4;
+    background-color: #fff;
+    
+    /* height: 500px; */
+    .aside {
+      margin: 0;
+      height: 100%;
+      .explorer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+  }
 }
 .gutter {
   background-color: #eee;
