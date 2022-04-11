@@ -36,7 +36,21 @@
             </div>
           </template>
 <!-- -->
-          <sl-vue-tree
+          <vue-file-tree 
+            id="file-tree"
+            ref="filetree"
+            class="column"
+            @nodeClick="nodeClick"
+            @nodeDoubleClick="nodeDoubleClick"
+            @nodeDrop="nodeDrop"
+          >
+            <template slot="context-menu">
+              <div @click="doDashboard">Dashboard</div>
+              <div @click="doCustomers">Customers</div>
+            </template>
+          </vue-file-tree>
+<!-- -->
+          <!-- <sl-vue-tree
             v-model="nodes"
             ref="slVueTree"
             :allow-multiselect="false"
@@ -63,7 +77,7 @@
             <template slot="draginfo">
               {{ selectedNodesTitle }}
             </template>
-          </sl-vue-tree>
+          </sl-vue-tree> -->
 <!-- -->
         </b-card>
       </div>
@@ -89,7 +103,8 @@ import axios from 'axios';
 import Split from 'split.js';
 import JSZip from 'jszip';
 import { saveAs } from '@/utils/file-saver';
-import SlVueTree  from '@/components/sl-vue-tree/sl-vue-tree.vue';
+// import SlVueTree  from '@/components/sl-vue-tree/sl-vue-tree.vue';
+import VueFileTree  from '@/components/vue-file-tree/vue-file-tree.vue';
 // import { codemirror } from 'vue-codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/lint/lint.css';
@@ -104,7 +119,8 @@ export default {
   name: 'App',
   components: {
     NavBar,
-    SlVueTree,
+    // SlVueTree,
+    VueFileTree,
     // codemirror,
   },
   data() {
@@ -145,7 +161,7 @@ export default {
         autoCloseBrackets: true,
       },
       sizes: [20, 80],
-      gutterSize: 10,
+      gutterSize: 7,
       minSize: [150, 300],
       maxSize: [500, Infinity],
       cursor: 'col-resize',
@@ -172,6 +188,13 @@ export default {
         localStorage.setItem('split-sizes', JSON.stringify(sizes))
       },
     });
+
+    this.$refs.filetree.addPathToTree('template\\index.js', {}, false);
+    this.$refs.filetree.addPathToTree('template\\log.png', {}, false);
+    this.$refs.filetree.addPathToTree('src\\handler.py', {}, false);
+    this.$refs.filetree.addPathToTree('package.json', {}, false);
+    this.$refs.filetree.addPathToTree('README.md', {}, false);
+    this.$refs.filetree.addPathToTree('index.ejs', {}, false);
   },
   methods: {
     // onChangeName(params) {
@@ -298,6 +321,26 @@ export default {
       const $slVueTree = this.$refs.slVueTree;
       const paths = $slVueTree.getSelected().map(node => node.path);
       $slVueTree.remove(paths);
+    },
+        nodeClick(event, node) {
+      // console.log(`nodeClick ${util.inspect(node)}`);
+      console.log('nodeClick: ', node);
+    },
+    nodeDoubleClick(node) {
+      // console.log(`nodeDoubleClick ${util.inspect(node)}`);
+      console.log('nodeDoubleClick: ', node);
+    },
+    nodeDrop(node) {
+      // console.log(`nodeDrop ${util.inspect(node)}`);
+      console.log('nodeDrop: ', node);
+    },
+    doCustomers() {
+      console.log(`doCustomers`);
+      this.$refs.filetree.contextMenuIsVisible = false;
+    },
+    doDashboard() {
+      console.log(`doDashboard`);
+      this.$refs.filetree.contextMenuIsVisible = false;
     },
   },  
 };
