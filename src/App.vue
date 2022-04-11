@@ -50,35 +50,6 @@
             </template>
           </vue-file-tree>
 <!-- -->
-          <!-- <sl-vue-tree
-            v-model="nodes"
-            ref="slVueTree"
-            :allow-multiselect="false"
-            @select="nodeSelected"
-            @drop="nodeDropped"
-            @toggle="nodeToggled"
-            @nodecontextmenu="showContextMenu"
-          >
-            <template slot="title" slot-scope="{ node }">
-              <span class="item-icon">
-                <i class="fa fa-file" v-if="node.isLeaf"></i>
-                <i class="fa fa-folder" v-if="!node.isLeaf"></i>
-              </span>
-              {{ node.title }}
-            </template>
-
-            <template slot="toggle" slot-scope="{ node }">
-              <span v-if="!node.isLeaf">
-                <i v-if="node.isExpanded" class="fa fa-chevron-down"></i>
-                <i v-if="!node.isExpanded" class="fa fa-chevron-right"></i>
-              </span>
-            </template>
-
-            <template slot="draginfo">
-              {{ selectedNodesTitle }}
-            </template>
-          </sl-vue-tree> -->
-<!-- -->
         </b-card>
       </div>
       <div id="split-1" class="content">
@@ -99,11 +70,10 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 import Split from 'split.js';
 import JSZip from 'jszip';
 import { saveAs } from '@/utils/file-saver';
-// import SlVueTree  from '@/components/sl-vue-tree/sl-vue-tree.vue';
 import VueFileTree  from '@/components/vue-file-tree/vue-file-tree.vue';
 // import { codemirror } from 'vue-codemirror';
 import 'codemirror/lib/codemirror.css';
@@ -119,7 +89,6 @@ export default {
   name: 'App',
   components: {
     NavBar,
-    // SlVueTree,
     VueFileTree,
     // codemirror,
   },
@@ -197,15 +166,6 @@ export default {
     this.$refs.filetree.addPathToTree('index.ejs', {}, false);
   },
   methods: {
-    // onChangeName(params) {
-    //   console.log('onChangeName: ', params);
-    // },
-    // onAddNode(params) {
-    //   console.log('onAddNode: ', params);
-    // },
-    // onClick(params) {
-    //   console.log('onClick: ', params);
-    // },
     addFile() {
       console.log('addFile is called.');
     },
@@ -298,31 +258,13 @@ export default {
       slVueTree.updateNode(node.path, {data: { visible: !visible}});
       this.lastEvent = `Node ${node.title} is ${ visible ? 'visible' : 'invisible'} now`;
     },
-    nodeSelected(nodes, event) {
-      console.log(nodes);
-      this.selectedNodesTitle = nodes.map(node => node.title).join(', ');
-      this.lastEvent = `Select nodes: ${this.selectedNodesTitle}`;
-    },
-    nodeToggled(node, event) {
-      this.lastEvent = `Node ${node.title} is ${ node.isExpanded ? 'expanded' : 'collapsed'}`;
-    },
-    nodeDropped(nodes, position, event) {
-      this.lastEvent = `Nodes: ${nodes.map(node => node.title).join(', ')} are dropped ${position.placement} ${position.node.title}`;
-    },
-    showContextMenu(node, event) {
-      event.preventDefault();
-      this.contextMenuIsVisible = true;
-      const $contextMenu = this.$refs.contextmenu;
-      $contextMenu.style.left = event.clientX + 'px';
-      $contextMenu.style.top = event.clientY + 'px';
-    },
     removeNode() {
       this.contextMenuIsVisible = false;
       const $slVueTree = this.$refs.slVueTree;
       const paths = $slVueTree.getSelected().map(node => node.path);
       $slVueTree.remove(paths);
     },
-        nodeClick(event, node) {
+    nodeClick(event, node) {
       // console.log(`nodeClick ${util.inspect(node)}`);
       console.log('nodeClick: ', node);
     },
