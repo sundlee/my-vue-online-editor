@@ -21,6 +21,8 @@
     "jszip": "^3.9.1",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
+    "mime": "^3.0.0",
+    "parse-filepath": "^1.0.2",
     "sl-vue-tree": "^1.8.5",
     "split.js": "^1.6.5",
     "vue": "^2.6.11",
