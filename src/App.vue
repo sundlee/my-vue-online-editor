@@ -2,7 +2,7 @@
   <div id="app" @click="contextMenuIsVisible = false">
     <nav-bar />
     <div class="last-event row">
-      Last event: {{ lastEvent }}
+      <!-- Last event: {{ lastEvent }} -->
     </div>
     <div class="split">
       <div id="split-0" class="content">
@@ -53,17 +53,18 @@
         </b-card>
       </div>
       <div id="split-1" class="content">
-        <div class="json-preview">
+        <!-- <div class="json-preview">
+          <pre>{{ selectedFile }}</pre>
           <pre>{{ JSON.stringify(nodes, null, 4)}}</pre>
-        </div>
-        <div class="contextmenu" ref="contextmenu" v-show="contextMenuIsVisible">
+        </div> -->
+        <!-- <div class="contextmenu" ref="contextmenu" v-show="contextMenuIsVisible">
           <div @click="removeNode">Remove</div>
-        </div>
-        <!-- <codemirror
+        </div> -->
+        <codemirror
           ref="codemirror"
-          :value="code"
+          :value="selectedFile"
           :options="cmOptions"
-        /> -->
+        />
       </div>
     </div>
   </div>
@@ -75,7 +76,7 @@ import Split from 'split.js';
 import JSZip from 'jszip';
 import { saveAs } from '@/utils/file-saver';
 import VueFileTree  from '@/components/vue-file-tree/vue-file-tree.vue';
-// import { codemirror } from 'vue-codemirror';
+import { codemirror } from 'vue-codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/lint/lint.css';
 import 'codemirror/lib/codemirror';
@@ -90,31 +91,33 @@ export default {
   components: {
     NavBar,
     VueFileTree,
-    // codemirror,
+    codemirror,
   },
   data() {
     return {
-      nodes: [
-        { title: 'Item1', isLeaf: true },
-        { title: 'Item2', isLeaf: true },
-        { title: 'Folder1' },
-        {
-          title: 'Folder2', isExpanded: true, children: [
-            { title: 'Item3', isLeaf: true },
-            { title: 'Item4', isLeaf: true },
-            {
-              title: 'Folder3', children: [
-                { title: 'Item5', isLeaf: true }
-              ]
-            }
-          ]
-        },
-      ],
-      selectedNodesTitle: '',
+      selectedZipFile: null,
+      selectedFile: '',
+      // nodes: [
+      //   { title: 'Item1', isLeaf: true },
+      //   { title: 'Item2', isLeaf: true },
+      //   { title: 'Folder1' },
+      //   {
+      //     title: 'Folder2', isExpanded: true, children: [
+      //       { title: 'Item3', isLeaf: true },
+      //       { title: 'Item4', isLeaf: true },
+      //       {
+      //         title: 'Folder3', children: [
+      //           { title: 'Item5', isLeaf: true }
+      //         ]
+      //       }
+      //     ]
+      //   },
+      // ],
+      // selectedNodesTitle: '',
       contextMenuIsVisible: false,
-      lastEvent: 'No last event',
+      // lastEvent: 'No last event',
 
-      code: 'console.log(\'Hello World 1!\');\n\nconsole.log(\'Hello World 2!\');\n',
+      // code: 'console.log(\'Hello World 1!\');\n\nconsole.log(\'Hello World 2!\');\n',
       cmOptions: {
         tabSize: 2,
         autofocus: true,
@@ -175,36 +178,14 @@ export default {
     importZip() {
       console.log('importZip is called.');
     },
-    getNewTree() {
-      var vm = this
-      function _dfs(oldNode) {
-        var newNode = {}
-
-        for (var k in oldNode) {
-          if (k !== 'children' && k !== 'parent') {
-            newNode[k] = oldNode[k]
-          }
-        }
-
-        if (oldNode.children && oldNode.children.length > 0) {
-          newNode.children = []
-          for (var i = 0, len = oldNode.children.length; i < len; i++) {
-            newNode.children.push(_dfs(oldNode.children[i]))
-          }
-        }
-        return newNode
-      }
-
-      vm.newTree = _dfs(vm.data);
-    },
     handleFileUpload() {
       this.files = [];
       this.fileNames = [];
-      this.selectedFile = this.$refs.file.files[0];
-      // console.log(this.selectedFile.name);
+      this.selectedZipFile = this.$refs.file.files[0];
+      // console.log(this.selectedZipFile.name);
 
       var new_zip = new JSZip();
-      new_zip.loadAsync(this.selectedFile)
+      new_zip.loadAsync(this.selectedZipFile)
         .then((zip) => {
           this.rawFileNames = Object.keys(zip.files);
           console.log(this.rawFileNames);
@@ -251,13 +232,13 @@ export default {
           console.log(e);
       });
     },
-    toggleVisibility: function (event, node) {
-      const slVueTree = this.$refs.slVueTree;
-      event.stopPropagation();
-      const visible = !node.data || node.data.visible !== false;
-      slVueTree.updateNode(node.path, {data: { visible: !visible}});
-      this.lastEvent = `Node ${node.title} is ${ visible ? 'visible' : 'invisible'} now`;
-    },
+    // toggleVisibility: function (event, node) {
+    //   const slVueTree = this.$refs.slVueTree;
+    //   event.stopPropagation();
+    //   const visible = !node.data || node.data.visible !== false;
+    //   slVueTree.updateNode(node.path, {data: { visible: !visible}});
+    //   this.lastEvent = `Node ${node.title} is ${ visible ? 'visible' : 'invisible'} now`;
+    // },
     removeNode() {
       this.contextMenuIsVisible = false;
       const $slVueTree = this.$refs.slVueTree;
@@ -266,7 +247,8 @@ export default {
     },
     nodeClick(event, node) {
       // console.log(`nodeClick ${util.inspect(node)}`);
-      console.log('nodeClick: ', node);
+      this.selectedFile = node.title;
+      console.log('nodeClick: ', node.title);
     },
     nodeDoubleClick(node) {
       // console.log(`nodeDoubleClick ${util.inspect(node)}`);
@@ -323,8 +305,8 @@ a {
 
 
 .last-event {
-  color: white;
-  background-color: rgba(100, 100, 255, 0.5);
+  // color: white;
+  // background-color: rgba(100, 100, 255, 0.5);
   padding: 10px;
   border-radius: 2px;
 }
