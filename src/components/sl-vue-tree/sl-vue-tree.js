@@ -76,9 +76,12 @@ export default {
   },
 
   watch: {
-    value: function (newValue) {
-      this.currentValue = newValue;
-    }
+    value: {
+      handler(newValue) {
+        this.currentValue = newValue;
+      },
+      deep: true,
+    },
   },
 
   computed: {

@@ -129,12 +129,12 @@ export default {
     },
     methods: {
         getSelected() {
-            console.log('getSelected: ', this.$refs.slvuetree.getSelected());
+            // console.log('getSelected: ', this.$refs.slvuetree.getSelected());
             return this.$refs.slvuetree.getSelected();
         },
 
         setDefaultNode() {
-            console.log('setDefaultNode() this.nodes[0]: ', this.nodes[0])
+            // console.log('setDefaultNode() this.nodes[0]: ', this.nodes[0])
             this.nodes[0].isSelected = true;
         },
         
@@ -182,7 +182,7 @@ export default {
             console.log('external drop', cursorPosition, util.inspect(event));
         },
         addPathToTree(fn, content, isDir) {
-            // console.log(`addPathToTree ${fn} ${util.inspect(content)} ${isDir}`);
+            // console.log(`addPathToTree() - ${fn} ${util.inspect(content)} ${isDir}`);
             // console.log(`addPathToTree ${util.inspect(process)}`);
             // console.log(util.inspect(path));
             fn = path.normalize(fn);
@@ -196,7 +196,6 @@ export default {
             // console.log(`addPathToTree dirs ${util.inspect(split)}`);
             let curnodes = this.nodes;
             for (let dir of split.dirs) {
-                // console.log(`addPathToTree dir: ${JSON.stringify(dir, null, 4)}`);
                 if (dir === '.') continue;
                 let found = undefined;
                 for (let cur of curnodes) {
@@ -209,14 +208,14 @@ export default {
                     let newnode = {
                         title: dir, 
                         isLeaf: false,
-                        children: [], 
+                        children: [],
                         data: { 
                             type: "DIRECTORY",
-                            pathname: path.dirname(fn),
+                            pathname: split.dirs.slice(0, split.dirs.indexOf(dir) + 1).join('/'),
                             content: 'N/A',
                         }
                     };
-                    // console.log(`addPathToTree !found push newnode ${util.inspect(newnode)}`);
+                    // console.log(`addPathToTree() !found push newnode ${util.inspect(newnode)}`);
                     curnodes.push(newnode);
                     curnodes = newnode.children;
                 } else {
