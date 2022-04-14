@@ -2,7 +2,7 @@
   <nav>
     <h1>Online Code Editor Example</h1>
     <div class="description">
-      <a href="https://www.npmjs.com/package/vue-tree-list">vue-tree-list</a>와 <a href="https://www.npmjs.com/package/vue-codemirror">vue-codemirror</a>를 사용해서 Online Code Editor를 구성한 예제입니다.
+      <a href="https://github.com/robogeek/vue-file-tree">vue-file-tree</a>와 <a href="https://www.npmjs.com/package/vue-codemirror">vue-codemirror</a>를 사용해서 Online Code Editor를 구성한 예제입니다.
     </div>
   </nav>
 </template>

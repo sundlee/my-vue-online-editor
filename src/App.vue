@@ -22,13 +22,19 @@
                     <b-icon icon="plus"></b-icon>
                   </span>
                 </template>
-                <b-dropdown-item-button @click.prevent.stop="addFile">
+                <b-dropdown-item-button 
+                  v-if="!selectedNode.isLeaf"
+                  @click.prevent.stop="addFile"
+                >
                   새 파일
                 </b-dropdown-item-button>
-                <b-dropdown-item-button @click.prevent.stop="addFolder">
+                <b-dropdown-item-button
+                  v-if="!selectedNode.isLeaf"
+                  @click.prevent.stop="addFolder"
+                >
                   새 폴더
                 </b-dropdown-item-button>
-                <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-divider v-if="!selectedNode.isLeaf" />
                 <b-dropdown-item-button @click.prevent.stop="importZip">
                   zip 파일
                 </b-dropdown-item-button>
@@ -123,7 +129,7 @@ export default {
       selectedZipFile: null,
       selectedInputFileName: '',
       selectedInputFolderName: '',
-      selectedNode: { data: { content: '' } },
+      selectedNode: { isLeaf: false, data: { content: '' } },
 
       cmOptions: {
         tabSize: 2,
@@ -313,9 +319,9 @@ export default {
 <style src="@/components/sl-vue-tree/sl-vue-tree-code.css"></style>
 <style lang="scss">
 body {
-  background: #050d12;
+  background: white;
   font-family: Arial;
-  color: rgba(255, 255, 255, 0.5);
+  color: #2F4F4F;
 }
 
 a {
