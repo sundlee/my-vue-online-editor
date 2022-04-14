@@ -547,7 +547,7 @@ export default {
       if (!this.cursorPosition) {
         this.stopDrag();
         return;
-      };
+      }
 
 
       const draggingNodes = this.getDraggable();

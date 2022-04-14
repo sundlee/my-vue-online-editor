@@ -43,7 +43,7 @@
             <font-awesome-icon 
                 icon="file" 
                 v-else-if="node.isLeaf"></font-awesome-icon>
-            {{ node.title }} </template>
+            {{ node.title === '_TREE_ROOT_NODE_' ? '/' : node.title }}</template>
 
 
         <template slot="sidebar" slot-scope="{ node }">
@@ -65,6 +65,7 @@
 
 <script>
 
+import _ from 'lodash';
 import path from 'path';
 import util from 'util';
 import splitter from './path-splitdirs';
@@ -131,7 +132,7 @@ export default {
             this.$emit('nodeClick', event, node);
         },
         nodeDoubleClick(node, event) {
-            console.log(`nodeDoubleClick ${node.title} ${node.data.type} isLeaf ${node.isLeaf} ${util.inspect(node)}`);
+            // console.log(`nodeDoubleClick ${node.title} ${node.data.type} isLeaf ${node.isLeaf} ${util.inspect(node)}`);
             if (!node.isLeaf) {
                 this.$refs.slvuetree.onToggleHandler(event, node);
                 return;
@@ -139,13 +140,13 @@ export default {
             this.$emit('nodeDoubleClick', node);
         },
         nodeSelect(node) {
-            console.log(`nodeSelect ${util.inspect(node)}`);
+            // console.log(`nodeSelect ${util.inspect(node)}`);
         },
         nodeToggle(node) {
-            console.log(`nodeToggle ${util.inspect(node)}`);
+            // console.log(`nodeToggle ${util.inspect(node)}`);
         },
         nodeDrop(node) {
-            console.log(`nodeDrop ${util.inspect(node)}`);
+            // console.log(`nodeDrop ${util.inspect(node)}`);
             this.$emit('nodeDrop', node);
         },
         nodeContextMenu(node, event) {
@@ -170,20 +171,22 @@ export default {
         onExternalDropHandler(cursorPosition, event) {
             console.log('external drop', cursorPosition, util.inspect(event));
         },
-        addPathToTree(fn, stat, isDir) {
-            console.log(`addPathToTree ${fn} ${util.inspect(stat)} ${isDir}`);
-            console.log(`addPathToTree ${util.inspect(process)}`);
-            console.log(util.inspect(path));
+        addPathToTree(fn, content, isDir) {
+            // console.log(`addPathToTree ${fn} ${util.inspect(content)} ${isDir}`);
+            // console.log(`addPathToTree ${util.inspect(process)}`);
+            // console.log(util.inspect(path));
             fn = path.normalize(fn);
-            console.log(`addPathToTree NORMALIZED ${fn}`);
+            // console.log(`addPathToTree NORMALIZED ${fn}`);
             const basenm = path.basename(fn);
-            console.log(`addPathToTree BASENAME ${basenm}`);
+            // console.log(`addPathToTree BASENAME ${basenm}`);
 
             const split = splitter(fn);
+            // console.log(`addPathToTree split: ${JSON.stringify(split, null, 4)}`);
 
-            console.log(`addPathToTree dirs ${util.inspect(split)}`);
+            // console.log(`addPathToTree dirs ${util.inspect(split)}`);
             let curnodes = this.nodes;
             for (let dir of split.dirs) {
+                // console.log(`addPathToTree dir: ${JSON.stringify(dir, null, 4)}`);
                 if (dir === '.') continue;
                 let found = undefined;
                 for (let cur of curnodes) {
@@ -200,10 +203,10 @@ export default {
                         data: { 
                             type: "DIRECTORY",
                             pathname: fn, 
-                            stat 
+                            content: 'N/A',
                         }
                     };
-                    console.log(`addPathToTree !found push newnode ${util.inspect(newnode)}`);
+                    // console.log(`addPathToTree !found push newnode ${util.inspect(newnode)}`);
                     curnodes.push(newnode);
                     curnodes = newnode.children;
                 } else {
@@ -216,7 +219,7 @@ export default {
                 data: { 
                     type: mime.getType(fn),
                     pathname: fn,
-                    stat
+                    content
                 }
             };
             if (!newnode.data.type) newnode.data.type = "text/plain";
@@ -224,8 +227,12 @@ export default {
             if (fn.endsWith('.ejs')) newnode.data.type = "EJS";
             if (fn.endsWith('.vue')) newnode.data.type = "VUEJS";
             if (!newnode.isLeaf) newnode.children = [];
-            console.log(`addPathToTree FINAL push newnode ${util.inspect(newnode)}`);
+            // console.log(`addPathToTree FINAL push newnode ${util.inspect(newnode)}`);
             curnodes.push(newnode);
+
+            // console.log(`addPathToTree nodes 1: ${JSON.stringify(this.nodes[0].children, null, 4)}`);
+            this.nodes[0].children = _.orderBy(this.nodes[0].children, ['isLeaf', 'title'], ['asc', 'asc']);
+            // console.log(`addPathToTree nodes 2: ${JSON.stringify(this.nodes[0].children, null, 4)}`);
         }
     }
 }

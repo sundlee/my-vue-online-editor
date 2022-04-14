@@ -1,5 +1,5 @@
 <template>
-  <div id="app" @click="contextMenuIsVisible = false">
+  <div id="app">
     <nav-bar />
     <div class="last-event row">
       <!-- Last event: {{ lastEvent }} -->
@@ -35,7 +35,7 @@
               </b-dropdown>
             </div>
           </template>
-<!-- -->
+
           <vue-file-tree 
             id="file-tree"
             ref="filetree"
@@ -44,34 +44,34 @@
             @nodeDoubleClick="nodeDoubleClick"
             @nodeDrop="nodeDrop"
           >
-            <template slot="context-menu">
+            <!-- <template slot="context-menu">
               <div @click="doDashboard">Dashboard</div>
               <div @click="doCustomers">Customers</div>
-            </template>
+            </template> -->
           </vue-file-tree>
-<!-- -->
+
         </b-card>
       </div>
       <div id="split-1" class="content">
-        <!-- <div class="json-preview">
-          <pre>{{ selectedFile }}</pre>
-          <pre>{{ JSON.stringify(nodes, null, 4)}}</pre>
-        </div> -->
-        <!-- <div class="contextmenu" ref="contextmenu" v-show="contextMenuIsVisible">
-          <div @click="removeNode">Remove</div>
-        </div> -->
         <codemirror
           ref="codemirror"
-          :value="selectedFile"
+          :value="selectedNode.data.content"
           :options="cmOptions"
         />
       </div>
     </div>
+    <b-modal ref="my-modal" hide-footer title="파일 추가">
+      <div class="d-block text-center">
+        <p>추가할 파일 이름을 입력해주세요.</p>
+      </div>
+      <b-button class="mt-3" variant="outline-danger" block @click="hideModal">Close Me</b-button>
+      <b-button class="mt-2" variant="outline-warning" block @click="showModal">Toggle Me</b-button>
+    </b-modal>
   </div>
 </template>
 
 <script>
-// import axios from 'axios';
+// import util from 'util';
 import Split from 'split.js';
 import JSZip from 'jszip';
 import { saveAs } from '@/utils/file-saver';
@@ -97,27 +97,8 @@ export default {
     return {
       selectedZipFile: null,
       selectedFile: '',
-      // nodes: [
-      //   { title: 'Item1', isLeaf: true },
-      //   { title: 'Item2', isLeaf: true },
-      //   { title: 'Folder1' },
-      //   {
-      //     title: 'Folder2', isExpanded: true, children: [
-      //       { title: 'Item3', isLeaf: true },
-      //       { title: 'Item4', isLeaf: true },
-      //       {
-      //         title: 'Folder3', children: [
-      //           { title: 'Item5', isLeaf: true }
-      //         ]
-      //       }
-      //     ]
-      //   },
-      // ],
-      // selectedNodesTitle: '',
-      contextMenuIsVisible: false,
-      // lastEvent: 'No last event',
+      selectedNode: { data: { content: '' } },
 
-      // code: 'console.log(\'Hello World 1!\');\n\nconsole.log(\'Hello World 2!\');\n',
       cmOptions: {
         tabSize: 2,
         autofocus: true,
@@ -137,11 +118,12 @@ export default {
       minSize: [150, 300],
       maxSize: [500, Infinity],
       cursor: 'col-resize',
+      handlerContent: '"use strict";\n\nmodule.exports = async (context, callback) => {\n    return {status: "handlerJs"};\n}',
+      handlerContentPy: '"use strict";\n\nmodule.exports = async (context, callback) => {\n    return {status: "handlerPy"};\n}',
+      packageContent: '{\n  "name": "examplejs",\n  "version": "0.1.0",\n  "private": true,\n  "scripts": {\n    "serve": "vue-cli-service serve",\n    "build": "vue-cli-service build",\n    "lint": "vue-cli-service lint"\n  }\n}',
     };
   },
   mounted() {
-    window.slVueTree = this.$refs.slVueTree;
-
     let sizes = localStorage.getItem('split-sizes')
     if (sizes) {
       sizes = JSON.parse(sizes);
@@ -161,22 +143,60 @@ export default {
       },
     });
 
-    this.$refs.filetree.addPathToTree('template\\index.js', {}, false);
-    this.$refs.filetree.addPathToTree('template\\log.png', {}, false);
-    this.$refs.filetree.addPathToTree('src\\handler.py', {}, false);
-    this.$refs.filetree.addPathToTree('package.json', {}, false);
-    this.$refs.filetree.addPathToTree('README.md', {}, false);
-    this.$refs.filetree.addPathToTree('index.ejs', {}, false);
+    // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/template/index.js', {}, false);
+    // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/template/logo.png', {}, false);
+    this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/src/handler.py', this.handlerContentPy, false);
+    this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/package.json', this.packageContent, false);
+    // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/README.md', {}, false);
+    this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/handler.js', this.handlerContent, false);
   },
   methods: {
     addFile() {
       console.log('addFile is called.');
+      this.$refs['my-modal'].show();
     },
     addFolder() {
       console.log('addFolder is called.');
     },
     importZip() {
       console.log('importZip is called.');
+    },
+    removeNode() {
+      // this.contextMenuIsVisible = false;
+      const $slVueTree = this.$refs.slVueTree;
+      const paths = $slVueTree.getSelected().map(node => node.path);
+      $slVueTree.remove(paths);
+    },
+    nodeClick(event, node) {
+      // console.log(`addPathToTree ${util.inspect(process)}`);
+      // console.log(`nodeClick ${util.inspect(node)}`);
+      console.log(`nodeClick node.data.pathname: ${JSON.stringify(node.data.pathname, null, 4)}`);
+
+      this.selectedFile = node.data.content;
+      this.selectedNode = node;
+      // console.log('nodeClick: ', node.title);
+    },
+    nodeDoubleClick(node) {
+      // console.log(`nodeDoubleClick ${util.inspect(node)}`);
+      console.log('nodeDoubleClick: ', node.title);
+    },
+    nodeDrop(node) {
+      // console.log(`nodeDrop ${util.inspect(node)}`);
+      console.log('nodeDrop: ', node);
+    },
+    // doCustomers() {
+    //   console.log(`doCustomers`);
+    //   this.$refs.filetree.contextMenuIsVisible = false;
+    // },
+    // doDashboard() {
+    //   console.log(`doDashboard`);
+    //   this.$refs.filetree.contextMenuIsVisible = false;
+    // },
+    showModal() {
+      this.$refs['my-modal'].show()
+    },
+    hideModal() {
+      this.$refs['my-modal'].hide()
     },
     handleFileUpload() {
       this.files = [];
@@ -231,40 +251,6 @@ export default {
       }, function (e) {
           console.log(e);
       });
-    },
-    // toggleVisibility: function (event, node) {
-    //   const slVueTree = this.$refs.slVueTree;
-    //   event.stopPropagation();
-    //   const visible = !node.data || node.data.visible !== false;
-    //   slVueTree.updateNode(node.path, {data: { visible: !visible}});
-    //   this.lastEvent = `Node ${node.title} is ${ visible ? 'visible' : 'invisible'} now`;
-    // },
-    removeNode() {
-      this.contextMenuIsVisible = false;
-      const $slVueTree = this.$refs.slVueTree;
-      const paths = $slVueTree.getSelected().map(node => node.path);
-      $slVueTree.remove(paths);
-    },
-    nodeClick(event, node) {
-      // console.log(`nodeClick ${util.inspect(node)}`);
-      this.selectedFile = node.title;
-      console.log('nodeClick: ', node.title);
-    },
-    nodeDoubleClick(node) {
-      // console.log(`nodeDoubleClick ${util.inspect(node)}`);
-      console.log('nodeDoubleClick: ', node);
-    },
-    nodeDrop(node) {
-      // console.log(`nodeDrop ${util.inspect(node)}`);
-      console.log('nodeDrop: ', node);
-    },
-    doCustomers() {
-      console.log(`doCustomers`);
-      this.$refs.filetree.contextMenuIsVisible = false;
-    },
-    doDashboard() {
-      console.log(`doDashboard`);
-      this.$refs.filetree.contextMenuIsVisible = false;
     },
   },  
 };
