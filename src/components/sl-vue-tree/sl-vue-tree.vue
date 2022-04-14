@@ -8,20 +8,21 @@
   >
     <div ref="nodes" class="sl-vue-tree-nodes-list">
       <div
-          class="sl-vue-tree-node" v-for="(node, nodeInd) in nodes"
-          :class="{'sl-vue-tree-selected': node.isSelected }"
+        class="sl-vue-tree-node" v-for="(node, nodeInd) in nodes"
+        :key="`tree-node-${nodeInd}`"
+        :class="{'sl-vue-tree-selected': node.isSelected }"
       >
         <div
           class="sl-vue-tree-cursor sl-vue-tree-cursor_before"
           @dragover.prevent
           :style="{
-        'visibility': cursorPosition &&
-          cursorPosition.node.pathStr === node.pathStr &&
-          cursorPosition.placement === 'before' ?
-          'visible' :
-          'hidden',
-        '--depth': depth
-      }"
+            'visibility': cursorPosition &&
+              cursorPosition.node.pathStr === node.pathStr &&
+              cursorPosition.placement === 'before' ?
+              'visible' :
+              'hidden',
+            '--depth': depth
+          }"
         >
           <!-- suggested place for node insertion  -->
         </div>
@@ -49,7 +50,7 @@
             'sl-vue-tree-node-is-folder' : !node.isLeaf
           }"
         >
-          <div class="sl-vue-tree-gap" v-for="gapInd in gaps"></div>
+          <div class="sl-vue-tree-gap" v-for="(gapInd, idx) in gaps" :key="`tree-gap-${idx}`"></div>
 
           <div class="sl-vue-tree-branch" v-if="level && showBranches">
             <slot name="branch" :node="node">

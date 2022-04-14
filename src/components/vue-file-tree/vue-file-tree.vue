@@ -73,7 +73,7 @@ import splitter from './path-splitdirs';
 import mime from 'mime';
 
 import slVueTree from '@/components/sl-vue-tree/sl-vue-tree.vue';
-// import 'sl-vue-tree/dist/sl-vue-tree-dark.css';
+// import '@/components/sl-vue-tree/sl-vue-tree-code.css';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -128,6 +128,16 @@ export default {
         }
     },
     methods: {
+        getSelected() {
+            console.log('getSelected: ', this.$refs.slvuetree.getSelected());
+            return this.$refs.slvuetree.getSelected();
+        },
+
+        setDefaultNode() {
+            console.log('setDefaultNode() this.nodes[0]: ', this.nodes[0])
+            this.nodes[0].isSelected = true;
+        },
+        
         nodeClick(node, event) {
             this.$emit('nodeClick', event, node);
         },
@@ -198,11 +208,11 @@ export default {
                 if (!found) {
                     let newnode = {
                         title: dir, 
-                        isLeaf: false, 
+                        isLeaf: false,
                         children: [], 
                         data: { 
                             type: "DIRECTORY",
-                            pathname: fn, 
+                            pathname: path.dirname(fn),
                             content: 'N/A',
                         }
                     };

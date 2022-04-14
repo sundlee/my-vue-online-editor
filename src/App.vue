@@ -60,12 +60,19 @@
         />
       </div>
     </div>
-    <b-modal ref="my-modal" hide-footer title="파일 추가">
+
+    <b-modal
+      ref="inputSelectedFileNameModal"
+      title="파일 추가"
+      @ok="handleOkSelectedInputFileName"
+    >
       <div class="d-block text-center">
         <p>추가할 파일 이름을 입력해주세요.</p>
       </div>
-      <b-button class="mt-3" variant="outline-danger" block @click="hideModal">Close Me</b-button>
-      <b-button class="mt-2" variant="outline-warning" block @click="showModal">Toggle Me</b-button>
+      <b-form-input
+        v-model="selectedInputFileName"
+        placeholder="Enter file name"
+      ></b-form-input>
     </b-modal>
   </div>
 </template>
@@ -96,7 +103,7 @@ export default {
   data() {
     return {
       selectedZipFile: null,
-      selectedFile: '',
+      selectedInputFileName: '',
       selectedNode: { data: { content: '' } },
 
       cmOptions: {
@@ -119,6 +126,7 @@ export default {
       maxSize: [500, Infinity],
       cursor: 'col-resize',
       handlerContent: '"use strict";\n\nmodule.exports = async (context, callback) => {\n    return {status: "handlerJs"};\n}',
+      handlerContent2: '"use strict";\n\nmodule.exports = async (context, callback) => {\n    return {status: "handlerJs2222"};\n}',
       handlerContentPy: '"use strict";\n\nmodule.exports = async (context, callback) => {\n    return {status: "handlerPy"};\n}',
       packageContent: '{\n  "name": "examplejs",\n  "version": "0.1.0",\n  "private": true,\n  "scripts": {\n    "serve": "vue-cli-service serve",\n    "build": "vue-cli-service build",\n    "lint": "vue-cli-service lint"\n  }\n}',
     };
@@ -149,11 +157,32 @@ export default {
     this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/package.json', this.packageContent, false);
     // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/README.md', {}, false);
     this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/handler.js', this.handlerContent, false);
+
+    this.setDefaultFile();
   },
   methods: {
+    setDefaultFile() {
+      this.$refs.filetree.setDefaultNode();
+      const node = this.$refs.filetree.getSelected();
+      this.$nextTick(() => {
+        console.log('setDefaultFile() - node: ', node);
+        this.selectedNode = node[0];
+      });
+    },
     addFile() {
-      console.log('addFile is called.');
-      this.$refs['my-modal'].show();
+      console.log('pathname: ', this.selectedNode);
+      this.$refs.inputSelectedFileNameModal.show();
+    },
+    handleOkSelectedInputFileName(e) {
+      e.preventDefault();
+      
+      console.log('selectedInputFileName: ', this.selectedInputFileName);
+      this.$nextTick(() => {
+        this.$refs.inputSelectedFileNameModal.hide();
+      });
+
+      this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/handler22.js', this.handlerContent2, false);
+
     },
     addFolder() {
       console.log('addFolder is called.');
@@ -161,18 +190,16 @@ export default {
     importZip() {
       console.log('importZip is called.');
     },
-    removeNode() {
-      // this.contextMenuIsVisible = false;
-      const $slVueTree = this.$refs.slVueTree;
-      const paths = $slVueTree.getSelected().map(node => node.path);
-      $slVueTree.remove(paths);
-    },
+    // removeNode() {
+    //   const $slVueTree = this.$refs.slVueTree;
+    //   const paths = $slVueTree.getSelected().map(node => node.path);
+    //   $slVueTree.remove(paths);
+    // },
     nodeClick(event, node) {
       // console.log(`addPathToTree ${util.inspect(process)}`);
       // console.log(`nodeClick ${util.inspect(node)}`);
-      console.log(`nodeClick node.data.pathname: ${JSON.stringify(node.data.pathname, null, 4)}`);
+      // console.log(`nodeClick node.isSelected: ${JSON.stringify(node.isSelected, null, 4)}`);
 
-      this.selectedFile = node.data.content;
       this.selectedNode = node;
       // console.log('nodeClick: ', node.title);
     },
@@ -192,12 +219,6 @@ export default {
     //   console.log(`doDashboard`);
     //   this.$refs.filetree.contextMenuIsVisible = false;
     // },
-    showModal() {
-      this.$refs['my-modal'].show()
-    },
-    hideModal() {
-      this.$refs['my-modal'].hide()
-    },
     handleFileUpload() {
       this.files = [];
       this.fileNames = [];
