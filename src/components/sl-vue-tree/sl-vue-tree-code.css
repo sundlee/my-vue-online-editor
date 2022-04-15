@@ -66,6 +66,14 @@
     width: 20px;
 }
 
+.sl-vue-tree-node-item .sl-vue-tree-sidebar {
+    visibility: hidden;
+}
+
+.sl-vue-tree-node-item:hover .sl-vue-tree-sidebar {
+    visibility: visible;
+}
+
 .sl-vue-tree-sidebar {
     margin-left: auto;
 }

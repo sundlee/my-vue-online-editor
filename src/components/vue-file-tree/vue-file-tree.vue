@@ -47,9 +47,29 @@
 
 
         <template slot="sidebar" slot-scope="{ node }">
-            <font-awesome-icon 
-                icon="circle" 
-                v-if="node.data.isModified"></font-awesome-icon>
+            <b-dropdown
+                ref="plusDropdownBtn"
+                right
+                variant="link"
+                class="plus-button"
+                no-caret
+                >
+                <template #button-content>
+                    <font-awesome-icon 
+                        icon="ellipsis-h" 
+                    />
+                </template>
+                <b-dropdown-item-button 
+                    @click.prevent.stop="renameNode(node)"
+                >
+                    이름 변경
+                </b-dropdown-item-button>
+                <b-dropdown-item-button
+                    @click.prevent.stop="removeNode(node)"
+                >
+                    삭제
+                </b-dropdown-item-button>
+            </b-dropdown>
         </template>
     </sl-vue-tree>
 
@@ -59,6 +79,22 @@
             v-show="contextMenuIsVisible">
         <slot name="context-menu"></slot>
     </aside>
+
+    <b-modal
+      ref="inputSelectedNameModal"
+      title="이름 변경"
+      @ok="handleOkSelectedInputName"
+      @hidden="handleHiddenSelectedInputName"
+    >
+      <div class="d-block text-center">
+        <p>새 이름을 입력해주세요.</p>
+      </div>
+      <b-form-input
+        v-model="selectedInputName"
+        placeholder="Enter folder name"
+        autofocus
+      ></b-form-input>
+    </b-modal>
 
     </span>
 </template>
@@ -77,12 +113,12 @@ import slVueTree from '@/components/sl-vue-tree/sl-vue-tree.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
-  faCaretRight, faCaretDown, faTable, faImage, faFile, faCircle, faCode
+  faCaretRight, faCaretDown, faTable, faImage, faFile, faCircle, faCode, faEllipsisH
 } from '@fortawesome/free-solid-svg-icons';
 import { faJs, faVuejs } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-library.add(faJs, faVuejs, faCaretRight, faCaretDown, faTable, faImage, faFile, faCircle, faCode);
+library.add(faJs, faVuejs, faCaretRight, faCaretDown, faTable, faImage, faFile, faCircle, faCode, faEllipsisH);
 
 
 // TODO: Prevent dragging a file into a place where there's already one of the same name
@@ -111,7 +147,10 @@ export default {
     data() {
         return {
             nodes: [],
-            contextMenuIsVisible: false
+            contextMenuIsVisible: false,
+
+            selectedInputName: '',
+            currentNode: null,
         }
     },
     components: {
@@ -242,7 +281,51 @@ export default {
             // console.log(`addPathToTree nodes 1: ${JSON.stringify(this.nodes[0].children, null, 4)}`);
             this.nodes[0].children = _.orderBy(this.nodes[0].children, ['isLeaf', 'title'], ['asc', 'asc']);
             // console.log(`addPathToTree nodes 2: ${JSON.stringify(this.nodes[0].children, null, 4)}`);
-        }
+        },
+        findNode(pathname) {
+            const segments = pathname.split('/');
+
+            let currentNode = this.nodes;
+            let found = null;
+            let flag = false;
+
+            segments.forEach((segment) => {
+                found = _.find(currentNode, { title: segment });
+                if (found && !found.isLeaf) {
+                    currentNode = found.children;
+                } else if (found) {
+                    console.log(`FOUND: ${found.title}`);
+                    flag = true;
+                } else {
+                    console.error('NOT FOUND!!');
+                }
+            });
+
+            return flag ? found : null;
+        },
+        renameNode(node) {
+            this.currentNode = node;
+            this.$refs.inputSelectedNameModal.show();
+        },
+
+        handleOkSelectedInputName(e) {
+            e.preventDefault();
+            
+            console.log('selectedInputName: ', this.selectedInputName);
+            this.$nextTick(() => {
+                const found = this.findNode(this.currentNode.data.pathname);
+                found.title = this.selectedInputName;
+                this.$refs.inputSelectedNameModal.hide();
+            });
+
+        },
+        handleHiddenSelectedInputName() {
+            this.selectedInputName = '';
+        },
+
+        removeNode(node) {
+            console.log(`removeNode() node: ${JSON.stringify(node, null, 4)}`);
+        },
     }
 }
 
