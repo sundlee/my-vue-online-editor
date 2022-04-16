@@ -150,7 +150,7 @@ export default {
             contextMenuIsVisible: false,
 
             selectedInputName: '',
-            currentNode: null,
+            selectedNode: null,
         }
     },
     components: {
@@ -285,14 +285,14 @@ export default {
         findNode(pathname) {
             const segments = pathname.split('/');
 
-            let currentNode = this.nodes;
+            let parentNode = this.nodes;
             let found = null;
             let flag = false;
 
             segments.forEach((segment) => {
-                found = _.find(currentNode, { title: segment });
+                found = _.find(parentNode, { title: segment });
                 if (found && !found.isLeaf) {
-                    currentNode = found.children;
+                    parentNode = found.children;
                 } else if (found) {
                     console.log(`FOUND: ${found.title}`);
                     flag = true;
@@ -304,7 +304,7 @@ export default {
             return flag ? found : null;
         },
         renameNode(node) {
-            this.currentNode = node;
+            this.selectedNode = node;
             this.$refs.inputSelectedNameModal.show();
         },
 
@@ -313,7 +313,7 @@ export default {
             
             console.log('selectedInputName: ', this.selectedInputName);
             this.$nextTick(() => {
-                const found = this.findNode(this.currentNode.data.pathname);
+                const found = this.findNode(this.selectedNode.data.pathname);
                 found.title = this.selectedInputName;
                 this.$refs.inputSelectedNameModal.hide();
             });
@@ -323,8 +323,58 @@ export default {
             this.selectedInputName = '';
         },
 
+        findParentNode(pathname) {
+            let parentNode = this.nodes;
+            let found = null;
+            let flag = false;
+
+            const segments = pathname.split('/');
+            segments.forEach((segment) => {
+                found = _.find(parentNode, { title: segment });
+                console.log(`findParentNode() found: ${JSON.stringify(found, null, 4)}`);
+                if (found && !found.isLeaf) {
+                    console.log(`FOUND 111: ${found.title}`);
+                    parentNode = found.children;
+                } else if (found) {
+                    console.log(`FOUND 222: ${found.title}`);
+                    flag = true;
+                } else {
+                    console.error('NOT FOUND!!');
+                }
+            });
+
+            return flag ? parentNode : null;
+        },
+
+        findParentDir(pathname) {
+            let parentNode = this.nodes;
+            let found = null;
+            let flag = false;
+
+            const segments = pathname.split('/');
+            segments.forEach((segment, idx) => {
+                found = _.find(parentNode, { title: segment });
+                console.log(`findParentDir() found: ${JSON.stringify(found, null, 4)}`);
+                if (found && idx < segments.length - 1) {
+                    parentNode = found.children;
+                } else if (found) {
+                    flag = true;
+                } else {
+                    console.error('findParentDir() NOT FOUND!!');
+                }
+            });
+
+return flag ? parentNode : null;
+        },
+
         removeNode(node) {
-            console.log(`removeNode() node: ${JSON.stringify(node, null, 4)}`);
+            // console.log(`removeNode() node: ${JSON.stringify(node, null, 4)}`);
+            this.selectedNode = node;
+            let parentNode;
+            if (node.isLeaf) parentNode = this.findParentNode(node.data.pathname);
+            else parentNode = this.findParentDir(node.data.pathname, true);
+            const foundIdx = _.findIndex(parentNode, { title: node.title });
+            parentNode.splice(foundIdx, 1);
         },
     }
 }
