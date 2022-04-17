@@ -66,38 +66,6 @@
         />
       </div>
     </div>
-
-    <b-modal
-      ref="inputSelectedFileNameModal"
-      title="파일 추가"
-      @ok="handleOkSelectedInputFileName"
-      @hidden="handleHiddenSelectedInputFileName"
-    >
-      <div class="d-block text-center">
-        <p>추가할 파일 이름을 입력해주세요.</p>
-      </div>
-      <b-form-input
-        v-model="selectedInputFileName"
-        placeholder="Enter file name"
-        autofocus
-      ></b-form-input>
-    </b-modal>
-
-    <b-modal
-      ref="inputSelectedFolderNameModal"
-      title="폴더 추가"
-      @ok="handleOkSelectedInputFolderName"
-      @hidden="handleHiddenSelectedInputFolderName"
-    >
-      <div class="d-block text-center">
-        <p>추가할 폴더 이름을 입력해주세요.</p>
-      </div>
-      <b-form-input
-        v-model="selectedInputFolderName"
-        placeholder="Enter folder name"
-        autofocus
-      ></b-form-input>
-    </b-modal>
   </div>
 </template>
 
@@ -127,8 +95,6 @@ export default {
   data() {
     return {
       selectedZipFile: null,
-      selectedInputFileName: '',
-      selectedInputFolderName: '',
       selectedNode: { isLeaf: false, data: { content: '' } },
 
       cmOptions: {
@@ -191,64 +157,23 @@ export default {
       });
     },
     addFile() {
-      this.$refs.inputSelectedFileNameModal.show();
-    },
-    handleOkSelectedInputFileName(e) {
-      e.preventDefault();
-      
-      console.log('selectedInputFileName: ', this.selectedInputFileName);
-      this.$nextTick(() => {
-        this.$refs.inputSelectedFileNameModal.hide();
-      });
-
-      const fileName = `${this.selectedNode.data.pathname}/${this.selectedInputFileName}`;
-      console.log(`filename: ${fileName}`);
-      this.$refs.filetree.addPathToTree(fileName, this.emptyContent, false);
-    },
-    handleHiddenSelectedInputFileName() {
-      this.selectedInputFileName = '';
+      this.$refs.filetree.addFile(this.selectedNode);
     },
     addFolder() {
-      this.$refs.inputSelectedFolderNameModal.show();
-    },
-    handleOkSelectedInputFolderName(e) {
-      e.preventDefault();
-      
-      console.log('selectedInputFolderName: ', this.selectedInputFolderName);
-      this.$nextTick(() => {
-        this.$refs.inputSelectedFolderNameModal.hide();
-      });
-
-      const folderName = `${this.selectedNode.data.pathname}/${this.selectedInputFolderName}`;
-      console.log(`folderName: ${folderName}`);
-      this.$refs.filetree.addPathToTree(folderName, 'N/A', true);
-    },
-    handleHiddenSelectedInputFolderName() {
-      this.selectedInputFolderName = '';
+      this.$refs.filetree.addFolder(this.selectedNode);
     },
     importZip() {
       console.log('importZip is called.');
     },
-    // removeNode() {
-    //   const $slVueTree = this.$refs.slVueTree;
-    //   const paths = $slVueTree.getSelected().map(node => node.path);
-    //   $slVueTree.remove(paths);
-    // },
     nodeClick(event, node) {
-      // console.log(`addPathToTree ${util.inspect(process)}`);
-      // console.log(`nodeClick ${util.inspect(node)}`);
-      // console.log(`nodeClick node.data.pathname: ${JSON.stringify(node.data.pathname, null, 4)}`);
-
       this.selectedNode = node;
       // console.log('nodeClick: ', node.title);
     },
     nodeDoubleClick(node) {
-      // console.log(`nodeDoubleClick ${util.inspect(node)}`);
       console.log('nodeDoubleClick: ', node.title);
     },
     nodeDrop(node) {
-      // console.log(`nodeDrop ${util.inspect(node)}`);
-      console.log('nodeDrop: ', node);
+      console.log('nodeDrop: ', node.title);
     },
     // doCustomers() {
     //   console.log(`doCustomers`);

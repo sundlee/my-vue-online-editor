@@ -81,16 +81,48 @@
     </aside>
 
     <b-modal
-      ref="inputSelectedNameModal"
+      ref="inputSelectedRenameModal"
       title="이름 변경"
-      @ok="handleOkSelectedInputName"
-      @hidden="handleHiddenSelectedInputName"
+      @ok="handleOkselectedInputNodeName"
+      @hidden="handleHiddenselectedInputNodeName"
     >
       <div class="d-block text-center">
         <p>새 이름을 입력해주세요.</p>
       </div>
       <b-form-input
-        v-model="selectedInputName"
+        v-model="selectedInputNodeName"
+        placeholder="Enter folder name"
+        autofocus
+      ></b-form-input>
+    </b-modal>
+
+    <b-modal
+      ref="inputSelectedFileNameModal"
+      title="파일 추가"
+      @ok="handleOkSelectedInputFileName"
+      @hidden="handleHiddenSelectedInputFileName"
+    >
+      <div class="d-block text-center">
+        <p>추가할 파일 이름을 입력해주세요.</p>
+      </div>
+      <b-form-input
+        v-model="selectedInputFileName"
+        placeholder="Enter file name"
+        autofocus
+      ></b-form-input>
+    </b-modal>
+
+    <b-modal
+      ref="inputSelectedFolderNameModal"
+      title="폴더 추가"
+      @ok="handleOkSelectedInputFolderName"
+      @hidden="handleHiddenSelectedInputFolderName"
+    >
+      <div class="d-block text-center">
+        <p>추가할 폴더 이름을 입력해주세요.</p>
+      </div>
+      <b-form-input
+        v-model="selectedInputFolderName"
         placeholder="Enter folder name"
         autofocus
       ></b-form-input>
@@ -149,8 +181,11 @@ export default {
             nodes: [],
             contextMenuIsVisible: false,
 
-            selectedInputName: '',
+            selectedInputNodeName: '',
             selectedNode: null,
+
+            selectedInputFileName: '',
+            selectedInputFolderName: '',
         }
     },
     components: {
@@ -225,12 +260,9 @@ export default {
             // console.log(`addPathToTree ${util.inspect(process)}`);
             // console.log(util.inspect(path));
             fn = path.normalize(fn);
-            // console.log(`addPathToTree NORMALIZED ${fn}`);
             const basenm = path.basename(fn);
-            // console.log(`addPathToTree BASENAME ${basenm}`);
 
             const split = splitter(fn);
-            // console.log(`addPathToTree split: ${JSON.stringify(split, null, 4)}`);
 
             // console.log(`addPathToTree dirs ${util.inspect(split)}`);
             let curnodes = this.nodes;
@@ -278,10 +310,9 @@ export default {
             // console.log(`addPathToTree FINAL push newnode ${util.inspect(newnode)}`);
             curnodes.push(newnode);
 
-            // console.log(`addPathToTree nodes 1: ${JSON.stringify(this.nodes[0].children, null, 4)}`);
             this.nodes[0].children = _.orderBy(this.nodes[0].children, ['isLeaf', 'title'], ['asc', 'asc']);
-            // console.log(`addPathToTree nodes 2: ${JSON.stringify(this.nodes[0].children, null, 4)}`);
         },
+
         findNode(pathname) {
             const segments = pathname.split('/');
 
@@ -305,22 +336,22 @@ export default {
         },
         renameNode(node) {
             this.selectedNode = node;
-            this.$refs.inputSelectedNameModal.show();
+            this.$refs.inputSelectedRenameModal.show();
         },
 
-        handleOkSelectedInputName(e) {
+        handleOkselectedInputNodeName(e) {
             e.preventDefault();
             
-            console.log('selectedInputName: ', this.selectedInputName);
+            console.log('selectedInputNodeName: ', this.selectedInputNodeName);
             this.$nextTick(() => {
                 const found = this.findNode(this.selectedNode.data.pathname);
-                found.title = this.selectedInputName;
-                this.$refs.inputSelectedNameModal.hide();
+                found.title = this.selectedInputNodeName;
+                this.$refs.inputSelectedRenameModal.hide();
             });
 
         },
-        handleHiddenSelectedInputName() {
-            this.selectedInputName = '';
+        handleHiddenselectedInputNodeName() {
+            this.selectedInputNodeName = '';
         },
 
         findParentNode(pathname) {
@@ -333,10 +364,8 @@ export default {
                 found = _.find(parentNode, { title: segment });
                 console.log(`findParentNode() found: ${JSON.stringify(found, null, 4)}`);
                 if (found && !found.isLeaf) {
-                    console.log(`FOUND 111: ${found.title}`);
                     parentNode = found.children;
                 } else if (found) {
-                    console.log(`FOUND 222: ${found.title}`);
                     flag = true;
                 } else {
                     console.error('NOT FOUND!!');
@@ -360,11 +389,11 @@ export default {
                 } else if (found) {
                     flag = true;
                 } else {
-                    console.error('findParentDir() NOT FOUND!!');
+                    console.error('NOT FOUND!!');
                 }
             });
 
-return flag ? parentNode : null;
+            return flag ? parentNode : null;
         },
 
         removeNode(node) {
@@ -376,8 +405,47 @@ return flag ? parentNode : null;
             const foundIdx = _.findIndex(parentNode, { title: node.title });
             parentNode.splice(foundIdx, 1);
         },
-    }
-}
+
+        addFile(selectedNode) {
+            this.selectedNode = selectedNode;
+            this.$refs.inputSelectedFileNameModal.show();
+        },
+        handleOkSelectedInputFileName(e) {
+            e.preventDefault();
+
+            console.log('selectedInputFileName: ', this.selectedInputFileName);
+            this.$nextTick(() => {
+                this.$refs.inputSelectedFileNameModal.hide();
+            });
+
+            const fileName = `${this.selectedNode.data.pathname}/${this.selectedInputFileName}`;
+            console.log(`filename: ${fileName}`);
+            this.addPathToTree(fileName, this.emptyContent, false);
+        },
+        handleHiddenSelectedInputFileName() {
+            this.selectedInputFileName = '';
+        },
+        addFolder(selectedNode) {
+            this.selectedNode = selectedNode;
+            this.$refs.inputSelectedFolderNameModal.show();
+        },
+        handleOkSelectedInputFolderName(e) {
+            e.preventDefault();
+            
+            console.log('selectedInputFolderName: ', this.selectedInputFolderName);
+            this.$nextTick(() => {
+                this.$refs.inputSelectedFolderNameModal.hide();
+            });
+
+            const folderName = `${this.selectedNode.data.pathname}/${this.selectedInputFolderName}`;
+            console.log(`folderName: ${folderName}`);
+            this.addPathToTree(folderName, 'N/A', true);
+        },
+        handleHiddenSelectedInputFolderName() {
+            this.selectedInputFolderName = '';
+        },
+    },
+};
 
 </script>
 
