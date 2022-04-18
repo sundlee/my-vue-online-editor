@@ -141,7 +141,7 @@ import splitter from './path-splitdirs';
 import mime from 'mime';
 
 import slVueTree from '@/components/sl-vue-tree/sl-vue-tree.vue';
-// import '@/components/sl-vue-tree/sl-vue-tree-code.css';
+import '@/components/sl-vue-tree/sl-vue-tree-code.css';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -451,21 +451,21 @@ export default {
 
 <style>
 
-.vue-file-tree-contextmenu {
+/* .vue-file-tree-contextmenu {
     position: absolute;
     background-color: white;
     color: black;
     border-radius: 2px;
     cursor: pointer;
-}
+} */
 
-.vue-file-tree-contextmenu > div {
+/* .vue-file-tree-contextmenu > div {
     padding: 10px;
-}
+} */
 
-.vue-file-tree-contextmenu > div:hover {
+/* .vue-file-tree-contextmenu > div:hover {
     background-color: rgba(100, 100, 255, 0.5);
-}
+} */
 
 #vue-file-tree {
     height: 100%;
@@ -478,10 +478,10 @@ export default {
 }
 
 .sl-vue-tree.sl-vue-tree-root {
-    border: 1px solid rgb(9, 22, 29);
-    background-color: rgb(9, 22, 29);
-    color: rgba(255, 255, 255, 0.5);
-    border-radius: 3px;
+    /* border: 1px solid rgb(9, 22, 29); */
+    /* background-color: rgb(9, 22, 29); */
+    /* color: rgba(255, 255, 255, 0.5); */
+    /* border-radius: 3px; */
 }
 
 .sl-vue-tree-root > .sl-vue-tree-nodes-list {
@@ -491,13 +491,13 @@ export default {
 }
 
 .sl-vue-tree-selected > .sl-vue-tree-node-item {
-    background-color: #13242d;
-    color: white;
+    /* background-color: #13242d; */
+    /* color: white; */
 }
 
 .sl-vue-tree-node-item:hover,
 .sl-vue-tree-node-item.sl-vue-tree-cursor-hover {
-    color: white;
+    /* color: white; */
 }
 
 .sl-vue-tree-node-item {

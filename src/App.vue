@@ -1,9 +1,6 @@
 <template>
   <div id="app">
     <nav-bar />
-    <div class="last-event row">
-      <!-- Last event: {{ lastEvent }} -->
-    </div>
     <div class="split">
       <div id="split-0" class="content">
         <b-card class="aside">
@@ -49,12 +46,7 @@
             @nodeClick="nodeClick"
             @nodeDoubleClick="nodeDoubleClick"
             @nodeDrop="nodeDrop"
-          >
-            <!-- <template slot="context-menu">
-              <div @click="doDashboard">Dashboard</div>
-              <div @click="doCustomers">Customers</div>
-            </template> -->
-          </vue-file-tree>
+          />
 
         </b-card>
       </div>
@@ -70,7 +62,6 @@
 </template>
 
 <script>
-// import util from 'util';
 import Split from 'split.js';
 import JSZip from 'jszip';
 import { saveAs } from '@/utils/file-saver';
@@ -100,7 +91,8 @@ export default {
       cmOptions: {
         tabSize: 2,
         autofocus: true,
-        mode: 'javascript',
+        styleSelectedText: true,
+        mode: 'text/javascript',
         styleActiveLine: true,
         lineWrapping: true,
         lineNumbers: true,
@@ -175,14 +167,6 @@ export default {
     nodeDrop(node) {
       console.log('nodeDrop: ', node.title);
     },
-    // doCustomers() {
-    //   console.log(`doCustomers`);
-    //   this.$refs.filetree.contextMenuIsVisible = false;
-    // },
-    // doDashboard() {
-    //   console.log(`doDashboard`);
-    //   this.$refs.filetree.contextMenuIsVisible = false;
-    // },
     handleFileUpload() {
       this.files = [];
       this.fileNames = [];
@@ -241,83 +225,30 @@ export default {
 };
 </script>
 
-<style src="@/components/sl-vue-tree/sl-vue-tree-code.css"></style>
 <style lang="scss">
 body {
   background: white;
   font-family: Arial;
   color: #2F4F4F;
+  height: 100vh;
 }
 
-a {
-  color: #bbb;
-}
-
-.row {
-  display: flex;
-  margin-bottom: 10px;
-}
-
-.contextmenu {
-  position: absolute;
-  background-color: white;
-  color: black;
-  border-radius: 2px;
-  cursor: pointer;
-}
-
-.contextmenu > div {
-  padding: 10px;
-}
-
-.contextmenu > div:hover {
-  background-color: rgba(100, 100, 255, 0.5);
-}
-
-
-.last-event {
-  // color: white;
-  // background-color: rgba(100, 100, 255, 0.5);
-  padding: 10px;
-  border-radius: 2px;
-}
-
-.tree-container {
-  flex-grow: 1;
-}
-
-.sl-vue-tree.sl-vue-tree-root {
-  flex-grow: 1;
-  overflow-x: hidden;
-  overflow-y: auto;
-  height: 300px;
-}
-
-
-.json-preview {
-  // flex-grow: 1;
-  // margin-left: 10px;
-  // background-color: #13242d;
-  // border: 1px solid black;
-  padding: 10px;
-  font-size: 13px;
-}
-
-.item-icon {
-  display: inline-block;
-  text-align: left;
-  width: 20px;
+#app {
+  height: 100%;
 }
 
 .split {
+  width: 100%;
+  height: calc(100% - 97px);
   display: flex;
   flex-direction: row;
+
   .content {
     border: 1px solid #c0c0c0;
     box-shadow: inset 0 1px 2px #e4e4e4;
     background-color: #fff;
-    
-    /* height: 500px; */
+    font-size: 14px;
+
     .aside {
       margin: 0;
       height: 100%;
@@ -341,6 +272,15 @@ a {
       padding: 0;
     }
   }
+  #split-1 {
+    height: 100%;
+    .vue-codemirror {
+      height: 100%;
+      .CodeMirror {
+      height: 100%;
+  }
+    }
+  }
 }
 .gutter {
   background-color: #eee;
@@ -350,19 +290,6 @@ a {
 .gutter.gutter-horizontal {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
   cursor: col-resize;
-}
-.vtl-btn {
-  font-size: 13px;
-}
-.icon {
-  &:hover {
-    cursor: pointer;
-    // background-color: red;
-  }
-}
-.muted {
-  color: gray;
-  font-size: 80%;
 }
 
 </style>
