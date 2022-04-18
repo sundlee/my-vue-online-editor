@@ -32,8 +32,18 @@
                   새 폴더
                 </b-dropdown-item-button>
                 <b-dropdown-divider v-if="!selectedNode.isLeaf" />
-                <b-dropdown-item-button @click.prevent.stop="importZip">
-                  zip 파일
+                <b-dropdown-item-button>
+                  <div class="filebox">
+                    <label for="fileDialog">zip 파일</label>
+                    <input
+                      type="file"
+                      id="fileDialog"
+                      ref="file"
+                      accept=".zip"
+                      hidden
+                      @change="handleFileUpload()"
+                    >
+                  </div>
                 </b-dropdown-item-button>
               </b-dropdown>
             </div>
@@ -134,11 +144,12 @@ export default {
       },
     });
 
-    this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/src/handler.py', this.handlerContentPy, false);
-    this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/package.json', this.packageContent, false);
-    this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/handler.js', this.handlerContent, false);
+    // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_', '', true);
+    // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/src/handler.py', this.handlerContentPy, false);
+    // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/package.json', this.packageContent, false);
+    // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/handler.js', this.handlerContent, false);
 
-    this.setDefaultFile();
+    // this.setDefaultFile();
   },
   methods: {
     setDefaultFile() {
@@ -177,7 +188,7 @@ export default {
       new_zip.loadAsync(this.selectedZipFile)
         .then((zip) => {
           this.rawFileNames = Object.keys(zip.files);
-          console.log(this.rawFileNames);
+          // console.log(this.rawFileNames);
           
           const promiseArray = [];
           this.rawFileNames.forEach((file) => {
@@ -194,6 +205,8 @@ export default {
                   name: file,
                   content: data[idx],
                 });
+                console.log(`file[${idx}]: ${file}`);
+                this.$refs.filetree.addPathToTree(`_TREE_ROOT_NODE_/${file}`, data[idx], false);
               });
               // console.log(`files: ${JSON.stringify(this.files, null, 4)}`);
             });
