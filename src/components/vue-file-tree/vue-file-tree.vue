@@ -444,6 +444,10 @@ export default {
         handleHiddenSelectedInputFolderName() {
             this.selectedInputFolderName = '';
         },
+
+        removeAllNode() {
+            this.nodes = [];
+        },
     },
 };
 

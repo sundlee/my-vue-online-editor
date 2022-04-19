@@ -144,7 +144,7 @@ export default {
       },
     });
 
-    // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_', '', true);
+    // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_', 'N/A', true);
     // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/src/handler.py', this.handlerContentPy, false);
     // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/package.json', this.packageContent, false);
     // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/handler.js', this.handlerContent, false);
@@ -184,6 +184,8 @@ export default {
       this.selectedZipFile = this.$refs.file.files[0];
       // console.log(this.selectedZipFile.name);
 
+      this.$refs.filetree.removeAllNode();
+
       var new_zip = new JSZip();
       new_zip.loadAsync(this.selectedZipFile)
         .then((zip) => {
@@ -205,10 +207,11 @@ export default {
                   name: file,
                   content: data[idx],
                 });
-                console.log(`file[${idx}]: ${file}`);
-                this.$refs.filetree.addPathToTree(`_TREE_ROOT_NODE_/${file}`, data[idx], false);
+                const str = Buffer.from(data[idx]).toString();
+                this.$refs.filetree.addPathToTree(`_TREE_ROOT_NODE_/${file}`, str, false);
               });
-              // console.log(`files: ${JSON.stringify(this.files, null, 4)}`);
+
+              this.setDefaultFile();
             });
         });
     },
