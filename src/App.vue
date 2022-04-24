@@ -211,6 +211,8 @@ export default {
                 const str = Buffer.from(data[idx]).toString();
                 this.$refs.filetree.addPathToTree(`_TREE_ROOT_NODE_/${file}`, str, false);
               });
+              
+              this.setDefaultFile();
             });
         });
     },
