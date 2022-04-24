@@ -48,6 +48,7 @@
 
         <template slot="sidebar" slot-scope="{ node }">
             <b-dropdown
+                v-if="node.title !== '_TREE_ROOT_NODE_'"
                 ref="plusDropdownBtn"
                 right
                 variant="link"
@@ -57,9 +58,10 @@
                 <template #button-content>
                     <font-awesome-icon 
                         icon="ellipsis-h" 
+                        style="color: #999999; font-size: 13px;"
                     />
                 </template>
-                <b-dropdown-item-button 
+                <b-dropdown-item-button
                     @click.prevent.stop="renameNode(node)"
                 >
                     이름 변경
@@ -178,7 +180,20 @@ export default {
     name: 'VueFileTree',
     data() {
         return {
-            nodes: [],
+            nodes: [
+                {
+                    "title": "_TREE_ROOT_NODE_",
+                    "isLeaf": false,
+                    "children": [
+                    ],
+                    "data": {
+                        "type": "DIRECTORY",
+                        "pathname": "_TREE_ROOT_NODE_",
+                        "content": "N/A"
+                    },
+                    "isSelected": true,
+                }
+            ],
             contextMenuIsVisible: false,
 
             selectedInputNodeName: '',
@@ -311,6 +326,8 @@ export default {
             curnodes.push(newnode);
 
             this.nodes[0].children = _.orderBy(this.nodes[0].children, ['isLeaf', 'title'], ['asc', 'asc']);
+
+            // console.log(`addPathToTree: nodes: ${JSON.stringify(this.nodes, null, 4)}`);
         },
 
         findNode(pathname) {
@@ -549,6 +566,11 @@ export default {
     opacity: 0.5;
     margin-left: 20px;
     padding: 5px 10px;
+}
+
+.plus-button .dropdown-menu.dropdown-menu-right.show {
+    min-width: 80px;
+    font-size: 13px;
 }
 
 </style>

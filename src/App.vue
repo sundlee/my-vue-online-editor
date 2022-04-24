@@ -114,7 +114,7 @@ export default {
         autoCloseBrackets: true,
       },
       sizes: [20, 80],
-      gutterSize: 7,
+      gutterSize: 5,
       minSize: [150, 300],
       maxSize: [500, Infinity],
       cursor: 'col-resize',
@@ -210,8 +210,6 @@ export default {
                 const str = Buffer.from(data[idx]).toString();
                 this.$refs.filetree.addPathToTree(`_TREE_ROOT_NODE_/${file}`, str, false);
               });
-
-              this.setDefaultFile();
             });
         });
     },
