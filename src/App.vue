@@ -149,12 +149,13 @@ export default {
     // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/package.json', this.packageContent, false);
     // this.$refs.filetree.addPathToTree('_TREE_ROOT_NODE_/handler.js', this.handlerContent, false);
 
-    // this.setDefaultFile();
+    this.setDefaultFile();
   },
   methods: {
     setDefaultFile() {
       this.$refs.filetree.setDefaultNode();
       const node = this.$refs.filetree.getSelected();
+      // console.log('setDefaultFile() - node: ', node);
       this.$nextTick(() => {
         this.selectedNode = node[0];
       });
