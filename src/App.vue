@@ -61,6 +61,9 @@
         </b-card>
       </div>
       <div id="split-1" class="content">
+        <div class="editor-top">
+          <b-button variant="primary">저장</b-button>
+        </div>
         <codemirror
           ref="codemirror"
           :value="selectedNode.data.content"
@@ -291,6 +294,17 @@ body {
   }
   #split-1 {
     height: 100%;
+    .editor-top {
+      height: 50px;
+      background-color: #eeeeee;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding-right: 20px;
+      .btn.btn-primary {
+        height: 40px;
+      }
+    }
     .vue-codemirror {
       height: 100%;
       .CodeMirror {
